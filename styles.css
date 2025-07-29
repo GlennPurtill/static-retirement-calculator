@@ -33,12 +33,14 @@ form div {
   Improves readability, accessibility, and maintainability.
 */
 
+
 label {
   display: block;
   margin-bottom: 5px;
   color: #444;
   font-weight: 500;
 }
+
 
 /* Group form fields for better spacing */
 .form-group {
