@@ -47,7 +47,7 @@ input[type="number"] {
   border-radius: 4px;
 }
 
-button {
+button:not(.close) {
   width: 100%;
   padding: 10px;
   background-color: #4CAF50;
@@ -57,7 +57,7 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+button:not(.close):hover {
   background-color: #45a049;
 }
 
@@ -89,7 +89,7 @@ input[type="number"] {
   box-sizing: border-box;
 }
 
-button {
+button:not(.close) {
   width: 100%;
   padding: 12px;
   background-color: #4CAF50;
@@ -102,7 +102,7 @@ button {
   transition: background 0.2s;
 }
 
-button:hover, button:focus {
+button:not(.close):hover, button:not(.close):focus {
   background-color: #45a049;
   outline: none;
 }
@@ -142,15 +142,18 @@ button:hover, button:focus {
   background: none;
   border: none;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: all 0.2s;
   z-index: 2;
   line-height: 1;
-  padding: 0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  width: auto;
 }
 
 .close:hover,
 .close:focus {
-  color: #222;
+  color: white;
+  background-color: #4CAF50;
   text-decoration: none;
   outline: none;
 }
