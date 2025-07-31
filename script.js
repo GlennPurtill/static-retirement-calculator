@@ -3,6 +3,10 @@ const currencySelect = document.getElementById('currency');
 const currentCurrencySymbol = document.getElementById('currentCurrencySymbol');
 const annualCurrencySymbol = document.getElementById('annualCurrencySymbol');
 
+/**
+ * Updates the currency symbols displayed in the input fields
+ * based on the selected currency from the dropdown.
+ */
 function updateCurrencySymbols() {
   const currency = currencySelect.value;
   let symbol = '$';
@@ -16,8 +20,6 @@ currencySelect.addEventListener('change', updateCurrencySymbols);
 // Initialize symbols on page load
 updateCurrencySymbols();
 
-// Retirement Calculator Script
-
 // Get DOM elements
 const modal = document.getElementById('resultModal');
 const closeBtn = document.querySelector('.close');
@@ -27,6 +29,7 @@ const modalResult = document.getElementById('modalResult');
 /**
  * Calculate estimated retirement savings based on user input.
  * Uses compound interest formula with annual contributions.
+ *
  * @param {number} currentSavings - Initial savings amount
  * @param {number} annualSavings - Amount saved each year
  * @param {number} expectedReturn - Expected annual return (percent)
@@ -43,7 +46,10 @@ function calculateRetirementSavings(currentSavings, annualSavings, expectedRetur
   return total;
 }
 
-// Handle form submission
+/**
+ * Handles the form submission event, validates input,
+ * performs the retirement savings calculation, and displays the result in a modal.
+ */
 savingsForm.addEventListener('submit', function(event) {
   event.preventDefault();
   // Parse and validate input values
@@ -66,12 +72,17 @@ savingsForm.addEventListener('submit', function(event) {
   modal.style.display = 'block';
 });
 
-// Close modal when close button is clicked
+/**
+ * Closes the result modal when the close button is clicked.
+ */
 closeBtn.addEventListener('click', function() {
   modal.style.display = 'none';
 });
 
-// Close modal when clicking outside modal content
+/**
+ * Closes the modal if the user clicks outside the modal content.
+ * @param {Event} event - The click event
+ */
 window.addEventListener('click', function(event) {
   if (event.target === modal) {
     modal.style.display = 'none';

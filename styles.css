@@ -33,6 +33,7 @@ form div {
   Improves readability, accessibility, and maintainability.
 */
 
+
 label {
   display: block;
   margin-bottom: 5px;
@@ -80,7 +81,8 @@ button:not(.close):hover {
   margin-bottom: 18px;
 }
 
-input[type="number"] {
+/* Consolidated input and select styles */
+input[type="number"], select {
   width: 100%;
   padding: 8px;
   border: 1px solid #ccc;
@@ -90,6 +92,8 @@ input[type="number"] {
 }
 
 button:not(.close) {
+/* Consolidated button styles */
+button {
   width: 100%;
   padding: 12px;
   background-color: #4CAF50;
