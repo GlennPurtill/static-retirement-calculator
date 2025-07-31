@@ -93,7 +93,6 @@ input[type="number"], select {
 
 button:not(.close) {
 /* Consolidated button styles */
-button {
   width: 100%;
   padding: 12px;
   background-color: #4CAF50;
