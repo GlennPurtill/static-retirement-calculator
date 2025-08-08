@@ -1,18 +1,12 @@
 // Update currency symbols in input fields when currency changes
 const currencySelect = document.getElementById('currency');
-const currentCurrencySymbol = document.getElementById('currentCurrencySymbol');
-const annualCurrencySymbol = document.getElementById('annualCurrencySymbol');
 
 /**
  * Updates the currency symbols displayed in the input fields
  * based on the selected currency from the dropdown.
  */
 function updateCurrencySymbols() {
-  const currency = currencySelect.value;
-  let symbol = '$';
-  if (currency === 'eur') symbol = '€';
-  currentCurrencySymbol.textContent = symbol;
-  annualCurrencySymbol.textContent = symbol;
+  // Symbols inside inputs removed; keep function for future reinstatement
 }
 
 currencySelect.addEventListener('change', updateCurrencySymbols);
@@ -50,25 +44,58 @@ function calculateRetirementSavings(currentSavings, annualSavings, expectedRetur
  * Handles the form submission event, validates input,
  * performs the retirement savings calculation, and displays the result in a modal.
  */
+
 savingsForm.addEventListener('submit', function(event) {
   event.preventDefault();
   // Parse and validate input values
   const currentSavings = parseFloat(document.getElementById('currentSavings').value) || 0;
   const annualSavings = parseFloat(document.getElementById('annualSavings').value) || 0;
+  const currentAge = parseInt(document.getElementById('currentAge').value, 10) || 0;
   const expectedReturn = parseFloat(document.getElementById('expectedReturn').value) || 0;
-  const yearsToRetirement = parseInt(document.getElementById('yearsToRetirement').value, 10) || 0;
+  const expectedInflation = parseFloat(document.getElementById('expectedInflation').value) || 0;
+  const retirementAge = parseInt(document.getElementById('retirementAge').value, 10) || 0;
   const currency = document.getElementById('currency').value;
 
-  if (yearsToRetirement < 1) {
-    modalResult.textContent = 'Years to retirement must be at least 1.';
+  if (currentAge < 0 || retirementAge <= currentAge) {
+    modalResult.textContent = 'Retirement age must be greater than current age.';
     modal.style.display = 'block';
     return;
   }
+  const yearsToRetirement = retirementAge - currentAge;
 
-  const totalSavings = calculateRetirementSavings(currentSavings, annualSavings, expectedReturn, yearsToRetirement);
+  // Table calculation
   let symbol = '$';
   if (currency === 'eur') symbol = '€';
-  modalResult.textContent = `Estimated retirement savings: ${symbol}${totalSavings.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  let rows = [];
+  let yearStart = currentSavings;
+  let total = currentSavings;
+  const rate = expectedReturn / 100;
+  let inflationRate = expectedInflation / 100;
+  let adjustedAnnual = annualSavings; // start with entered annual savings, inflate each year
+  for (let i = 1; i <= yearsToRetirement; i++) {
+    let added = adjustedAnnual;
+    let organicGrowth = (yearStart + added) * rate;
+    let yearEnd = (yearStart + added) * (1 + rate);
+    rows.push({
+      age: currentAge + i,
+      yearStart,
+      added,
+      organicGrowth,
+      yearEnd
+    });
+    yearStart = yearEnd;
+    adjustedAnnual *= (1 + inflationRate); // grow annual savings by inflation for next year
+  }
+  const totalSavings = rows.length ? rows[rows.length-1].yearEnd : currentSavings;
+
+  // Build table HTML
+  let table = `<div class="table-animate table-wrapper"><table class="breakdown-table"><thead><tr><th>Age</th><th>Start Balance</th><th>Annual Contribution</th><th>Investment Growth</th><th>End Balance</th></tr></thead><tbody>`;
+  rows.forEach(r => {
+    table += `<tr><td>${r.age}</td><td>${symbol}${r.yearStart.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td><td>${symbol}${r.added.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td><td>${symbol}${r.organicGrowth.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td><td>${symbol}${r.yearEnd.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td></tr>`;
+  });
+  table += `</tbody></table></div>`;
+
+  modalResult.innerHTML = `<div style="font-weight:bold;margin-bottom:12px;">Estimated retirement savings: ${symbol}${totalSavings.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>` + table;
   modal.style.display = 'block';
 });
 
