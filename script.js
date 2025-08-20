@@ -76,14 +76,18 @@ savingsForm.addEventListener('submit', function(event) {
   let adjustedCosts = expectedCosts; // start with entered costs, inflate each year
   let retired = false;
   let lastAge = currentAge;
-  let i = 1;
+  let i = 0;
   let stop = false;
+  let age = currentAge;
   while (!stop) {
-    let age = currentAge + i;
     let added = 0;
     let label = '';
-    if (age <= retirementAge) {
+    if (age < retirementAge) {
       // Pre-retirement: add annual savings
+      added = adjustedAnnual;
+      label = 'Contribution';
+    } else if (age === retirementAge) {
+      // Last year of contributions
       added = adjustedAnnual;
       label = 'Contribution';
     } else {
@@ -91,7 +95,7 @@ savingsForm.addEventListener('submit', function(event) {
       added = -adjustedCosts;
       label = 'Deduction';
     }
-    let organicGrowth = (yearStart + (added > 0 ? added : 0)) * rate;
+    let organicGrowth = (yearStart + added) * rate;
     let yearEnd = (yearStart + added) * (1 + rate);
     rows.push({
       age,
@@ -102,16 +106,15 @@ savingsForm.addEventListener('submit', function(event) {
       label
     });
     yearStart = yearEnd;
-    if (age < retirementAge) {
-      adjustedAnnual *= (1 + inflationRate); // grow annual savings by inflation for next year
-    } else {
-      adjustedCosts *= (1 + inflationRate); // grow annual costs by inflation for next year
-    }
+    // Grow both annual savings and deductions by inflation every year
+    adjustedAnnual *= (1 + inflationRate);
+    adjustedCosts *= (1 + inflationRate);
     // Stop if balance is depleted after retirement or age reaches 100
     if ((age > retirementAge && yearEnd <= 0) || age >= 100) {
       lastAge = age;
       stop = true;
     }
+    age++;
     i++;
   }
   const totalSavings = rows.length ? rows[rows.length-1].yearEnd : currentSavings;
